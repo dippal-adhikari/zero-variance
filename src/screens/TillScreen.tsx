@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { Keypad } from '../components/Keypad';
 import { AppButton } from '../components/AppButton';
 import { BackIconButton, HeaderBar } from '../components/HeaderBar';
+import { useThemedAlert } from '../components/ThemedAlert';
 import { useSettings } from '../state/SettingsContext';
 import { DENOMINATIONS, createEmptyTillRows, type DenominationKey } from '../till/denominations';
 import { formatCurrency, parseMoney, sumTotals } from '../till/math';
@@ -47,6 +48,7 @@ export function TillScreen({ navigation, route }: Props) {
   const c = palette.colors;
   const { settings } = useSettings();
   const insets = useSafeAreaInsets();
+  const { showAlert } = useThemedAlert();
 
   useFocusEffect(
     useCallback(() => {
@@ -192,17 +194,17 @@ export function TillScreen({ navigation, route }: Props) {
     if (total === 0 && floatAmount === 0) {
       setSaveMessage('Nothing to save');
       setTimeout(() => setSaveMessage(null), 2500);
-      Alert.alert('Nothing to save', 'Add counts or a float value before saving.', [{ text: 'OK' }]);
+      showAlert('Nothing to save', 'Add counts or a float value before saving.', [{ text: 'OK' }]);
       return;
     }
     await autoSave();
-    Alert.alert('Saved', 'Till count saved to history.', [
+    showAlert('Saved', 'Till count saved to history.', [
       { text: 'OK', onPress: () => navigation.navigate('Home') },
     ]);
-  }, [autoSave, navigation, total, floatAmount]);
+  }, [autoSave, navigation, showAlert, total, floatAmount]);
 
   const reset = useCallback(() => {
-    Alert.alert('Reset?', 'Clear all values for this session?', [
+    showAlert('Reset?', 'Clear all values for this session?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Reset',
@@ -216,7 +218,7 @@ export function TillScreen({ navigation, route }: Props) {
         },
       },
     ]);
-  }, [navigation, settings.defaultFloat]);
+  }, [navigation, settings.defaultFloat, showAlert]);
 
   useEffect(() => {
     const unsub = navigation.addListener('beforeRemove', (e) => {

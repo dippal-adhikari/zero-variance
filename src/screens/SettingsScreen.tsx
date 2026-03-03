@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -11,6 +11,7 @@ import { useSettings } from '../state/SettingsContext';
 import { deleteAllHistory } from '../history/history';
 import { BackIconButton, HeaderBar } from '../components/HeaderBar';
 import { AppButton } from '../components/AppButton';
+import { useThemedAlert } from '../components/ThemedAlert';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -29,6 +30,7 @@ export function SettingsScreen({ navigation }: Props) {
   const c = palette.colors;
   const insets = useSafeAreaInsets();
   const { settings, setDefaultFloat, setThemeId } = useSettings();
+  const { showAlert } = useThemedAlert();
 
   const [floatDraft, setFloatDraft] = useState(settings.defaultFloat || '0');
   const floatDraftRef = useRef(floatDraft);
@@ -120,14 +122,14 @@ export function SettingsScreen({ navigation }: Props) {
             title="Delete all history"
             variant="danger"
             onPress={() => {
-              Alert.alert('Delete history?', 'This cannot be undone.', [
+              showAlert('Delete history?', 'This cannot be undone.', [
                 { text: 'Cancel', style: 'cancel' },
                 {
                   text: 'Delete',
                   style: 'destructive',
                   onPress: async () => {
                     await deleteAllHistory();
-                    Alert.alert('Deleted', 'History has been cleared.');
+                    showAlert('Deleted', 'History has been cleared.', [{ text: 'OK' }]);
                   },
                 },
               ]);

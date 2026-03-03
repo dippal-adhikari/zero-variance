@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { RootStackParamList } from './src/navigation/types';
 import { SettingsProvider, useSettings } from './src/state/SettingsContext';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+import { ThemedAlertProvider } from './src/components/ThemedAlert';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { TillScreen } from './src/screens/TillScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
@@ -60,7 +61,9 @@ export default function App() {
       <SafeAreaProvider>
         <SettingsProvider>
           <ThemeProvider>
-            <Root />
+            <ThemedAlertProvider>
+              <Root />
+            </ThemedAlertProvider>
           </ThemeProvider>
         </SettingsProvider>
       </SafeAreaProvider>
